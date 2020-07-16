@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Koreatown for All (KFA) Freeway Banishment</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+	.geocoder-dropdown-item {
+	padding: 5px;
+	}
+	.geocoder-dropdown-icon {
+	margin-right: 10px;
+	}
+	.geocoder-dropdown-text {
+	color: #5a3fc0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: larger;
+	}
+	h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+/**
+* Set rules for how the map overlays
+* (information box and legend) will be displayed
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 15px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
+
+#features {
+  top: 0;
+  height: 220px;
+  margin-top: 20px;
+  width: 250px;
+}
+
+
+</style>
+</head>
+<body>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+    type="text/css"
+/>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+<div id="map"></div>
+<div class='map-overlay' id='features'><h2>KFA's Homelessness and Banishment Map</h2><div id='pd'><h3>LA ALLIANCE FOR HUMAN RIGHTS ET AL. v. CITY OF LOS ANGELES ET
+AL. </h3></div><div><p> Judge Taylor's ruling eliminates 43 square miles of public space and puts anywhere from 3,000 to 13,000 houseless individuals at risk of displacement and policing. </p></div></div>
+<div class='map-overlay' id='legend'></div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiY2dpYW1hcmlubyIsImEiOiJjanAyd2hwNWUwYnJ3M3dzMHF4MnJkZ29uIn0.7tLnplw65tLmywvvIPGSKA';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/cgiamarino/ck7cfnye806v31iqlkrt6qxbu',
+        center: [-118.249119, 34.062620],
+        zoom: 13
+    });
+
+		map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
+
+		// Add zoom and rotation controls to the map.
+		map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+
+		// geocoder
+		var geocoder = new MapboxGeocoder({
+			accessToken: mapboxgl.accessToken,
+			types: 'poi',
+			// see https://docs.mapbox.com/api/search/#geocoding-response-object for information about the schema of each response feature
+			render: function(item) {
+			// extract the item's maki icon or use a default
+			var maki = item.properties.maki || 'marker';
+			return (
+			"<div class='geocoder-dropdown-item'><img class='geocoder-dropdown-icon' src='https://unpkg.com/@mapbox/maki@6.1.0/icons/" +
+			maki +
+			"-15.svg'><span class='geocoder-dropdown-text'>" +
+			item.text +
+			'</span></div>'
+			);
+			},
+			mapboxgl: mapboxgl
+			});
+			map.addControl(geocoder);
+
+				// load geojson sources
+				map.on('load', function() {
+
+
+
+				map.addSource('fwy',{
+					'type': 'geojson',
+					'data': 'https://raw.githubusercontent.com/cgiamarino9/mapping/master/fwy-500ft-buffer.geojson'
+				});
+				map.addLayer({
+					'id': 'fwy-500',
+					'type': 'fill',
+					'source': 'fwy',
+					'layout': {},
+					'paint': {
+						'fill-color': '#9E3935',
+						'fill-opacity': 0.2
+					}
+				});
+
+
+
+
+				/*	map.on('click', 'abh-point-point', function(e) {
+						new mapboxgl.Popup()
+						.setLngLat(e.lngLat)
+						.setHTML(e.features[0].properties.site)
+						.addTo(map);
+						});
+
+
+
+						// Change the cursor to a pointer when the mouse is over the states layer.
+						map.on('mouseenter', 'abh-point-point', function() {
+						map.getCanvas().style.cursor = 'pointer';
+						});
+
+						// Change it back to a pointer when it leaves.
+						map.on('mouseleave', 'abh-point-point', function() {
+						map.getCanvas().style.cursor = '';
+					});*/
+
+
+
+
+
+			});
+
+</script>
+
+</body>
+</html>
